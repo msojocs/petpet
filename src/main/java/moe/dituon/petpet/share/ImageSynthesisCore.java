@@ -238,41 +238,70 @@ public abstract class ImageSynthesisCore {
         g2d.setStroke(outlineStroke);
 
         if (!text.contains("\n")) {
-            g2d.setColor(strokeColor);
-
-            GlyphVector glyphVector = font.createGlyphVector(g2d.getFontRenderContext(), text);
-            Shape textShape = glyphVector.getOutline();
-            AffineTransform transform = new AffineTransform();
-            transform.translate(pos[0], pos[1]);
-            textShape = transform.createTransformedShape(textShape);
-
-            g2d.draw(textShape);
-            g2d.setColor(color);
-            g2d.fill(textShape);
+            int y = pos[1];
+            g2dDrawStrokeTextLine(g2d, text, pos, color, font, strokeColor, y);
         } else {
             String[] texts = text.split("\n");
             int y = pos[1];
 
             short height = (short) TextModel.getTextHeight(text, font);
             for (String txt : texts) {
-                g2d.setColor(strokeColor);
-
-                GlyphVector glyphVector = font.createGlyphVector(g2d.getFontRenderContext(), txt);
-                Shape textShape = glyphVector.getOutline();
-                AffineTransform transform = new AffineTransform();
-                transform.translate(pos[0], y);
+                g2dDrawStrokeTextLine(g2d, txt, pos, color, font, strokeColor, y);
                 y += height + strokeSize * 2 + 2;
-                textShape = transform.createTransformedShape(textShape);
-
-                g2d.draw(textShape);
-                g2d.setColor(color);
-                g2d.fill(textShape);
             }
         }
 
         g2d.setColor(originalColor);
         g2d.setStroke(originalStroke);
         g2d.setRenderingHints(originalHints);
+    }
+
+    private static void g2dDrawStrokeTextLine(Graphics2D g2d, String text, int[] pos, Color color, Font font, Color strokeColor, int y) {
+
+        g2d.setColor(strokeColor);
+
+//        List<EmojiReader.Node> nodes = EmojiReader.INSTANCE.analyzeText(text);
+//        int xIng = pos[0];
+//        for (EmojiReader.Node node : nodes) {
+//            char[] chars = Character.toChars(node.getCodePoint().get(0));
+//            String s = String.valueOf(chars);
+//            int textWidth = TextModel.getTextWidth(s, font);
+//            if (node.isEmoji()) {
+//
+//                // emoji
+//                List<Integer> codePoint = node.getCodePoint();
+//                StringBuilder sb = new StringBuilder();
+//                for (Integer cp : codePoint) {
+//                    sb.append(String.format("-%x", cp));
+//                }
+//                String emojiCode = sb.substring(1);
+//                try{
+//                    short height = (short) TextModel.getTextHeight(s, font);
+//                    File emoji = new File("./data/emoji/png/" + emojiCode + ".png");
+//                    // emoji不存在
+//                    if (!emoji.exists())continue;
+//
+//                    BufferedImage emojiImage = ImageIO.read(emoji);
+//                    g2d.drawImage(emojiImage, xIng, y - height, height, height, null);
+//                    xIng += height + 2;
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                    g2d.drawString("?", xIng, y);
+//                    xIng += TextModel.getTextWidth("?", font);;
+//                }
+//            }else {
+//
+//            }
+//        }
+        GlyphVector glyphVector = font.createGlyphVector(g2d.getFontRenderContext(), text);
+        Shape textShape = glyphVector.getOutline();
+        AffineTransform transform = new AffineTransform();
+        transform.translate(pos[0], y);
+        textShape = transform.createTransformedShape(textShape);
+
+        g2d.draw(textShape);
+        g2d.setColor(color);
+        g2d.fill(textShape);
     }
 
     /**
