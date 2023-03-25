@@ -1,5 +1,6 @@
 package moe.dituon.petpet.share;
 
+import com.yy.mobile.emoji.EmojiReader;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -10,6 +11,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -168,12 +170,48 @@ public abstract class ImageSynthesisCore {
             int y = pos[1];
             short height = (short) TextModel.getTextHeight(text, font);
             for (String txt : texts) {
-                g2d.drawString(txt, pos[0], y);
+                drawString(g2d, txt, pos[0], y, font);
                 y += height + TextModel.LINE_SPACING;
             }
             return;
         }
-        g2d.drawString(text, pos[0], pos[1]);
+        drawString(g2d, text, pos[0], pos[1], font);
+    }
+
+    protected static void drawString(Graphics2D g2d, String str, int x, int y, Font font){
+        List<EmojiReader.Node> nodes = EmojiReader.INSTANCE.analyzeText(str);
+        int xIng = x;
+        for (EmojiReader.Node node : nodes) {
+            char[] chars = Character.toChars(node.getCodePoint().get(0));
+            String s = String.valueOf(chars);
+            int textWidth = TextModel.getTextWidth(s, font);
+            if (node.isEmoji()){
+                // emoji
+                List<Integer> codePoint = node.getCodePoint();
+                StringBuilder sb = new StringBuilder();
+                for (Integer cp : codePoint) {
+                    sb.append(String.format("-%x", cp));
+                }
+                String emojiCode = sb.substring(1);
+                try{
+                    short height = (short) TextModel.getTextHeight(s, font);
+                    File emoji = new File("./data/emoji/png/" + emojiCode + ".png");
+                    // emoji不存在
+                    if (!emoji.exists())continue;
+
+                    BufferedImage emojiImage = ImageIO.read(emoji);
+                    g2d.drawImage(emojiImage, xIng, y - height, height, height, null);
+                    xIng += height + 2;
+                }catch (Exception e){
+                    e.printStackTrace();
+                    g2d.drawString("?", xIng, y);
+                    xIng += TextModel.getTextWidth("?", font);;
+                }
+            }else{
+                g2d.drawString(s, xIng, y);
+                xIng += textWidth;
+            }
+        }
     }
 
     /**
