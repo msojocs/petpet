@@ -258,50 +258,52 @@ public abstract class ImageSynthesisCore {
 
     private static void g2dDrawStrokeTextLine(Graphics2D g2d, String text, int[] pos, Color color, Font font, Color strokeColor, int y) {
 
-        g2d.setColor(strokeColor);
 
-//        List<EmojiReader.Node> nodes = EmojiReader.INSTANCE.analyzeText(text);
-//        int xIng = pos[0];
-//        for (EmojiReader.Node node : nodes) {
-//            char[] chars = Character.toChars(node.getCodePoint().get(0));
-//            String s = String.valueOf(chars);
-//            int textWidth = TextModel.getTextWidth(s, font);
-//            if (node.isEmoji()) {
-//
-//                // emoji
-//                List<Integer> codePoint = node.getCodePoint();
-//                StringBuilder sb = new StringBuilder();
-//                for (Integer cp : codePoint) {
-//                    sb.append(String.format("-%x", cp));
-//                }
-//                String emojiCode = sb.substring(1);
-//                try{
-//                    short height = (short) TextModel.getTextHeight(s, font);
-//                    File emoji = new File("./data/emoji/png/" + emojiCode + ".png");
-//                    // emoji不存在
-//                    if (!emoji.exists())continue;
-//
-//                    BufferedImage emojiImage = ImageIO.read(emoji);
-//                    g2d.drawImage(emojiImage, xIng, y - height, height, height, null);
-//                    xIng += height + 2;
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                    g2d.drawString("?", xIng, y);
-//                    xIng += TextModel.getTextWidth("?", font);;
-//                }
-//            }else {
-//
-//            }
-//        }
-        GlyphVector glyphVector = font.createGlyphVector(g2d.getFontRenderContext(), text);
-        Shape textShape = glyphVector.getOutline();
-        AffineTransform transform = new AffineTransform();
-        transform.translate(pos[0], y);
-        textShape = transform.createTransformedShape(textShape);
+        List<EmojiReader.Node> nodes = EmojiReader.INSTANCE.analyzeText(text);
+        int xIng = pos[0];
+        for (EmojiReader.Node node : nodes) {
+            g2d.setColor(strokeColor);
+            char[] chars = Character.toChars(node.getCodePoint().get(0));
+            String s = String.valueOf(chars);
+            int textWidth = TextModel.getTextWidth(s, font);
+            if (node.isEmoji()) {
 
-        g2d.draw(textShape);
-        g2d.setColor(color);
-        g2d.fill(textShape);
+                // emoji
+                List<Integer> codePoint = node.getCodePoint();
+                StringBuilder sb = new StringBuilder();
+                for (Integer cp : codePoint) {
+                    sb.append(String.format("-%x", cp));
+                }
+                String emojiCode = sb.substring(1);
+
+                try{
+                    short height = (short) TextModel.getTextHeight(s, font);
+                    File emoji = new File("./data/emoji/png/" + emojiCode + ".png");
+                    // emoji不存在
+                    if (!emoji.exists())continue;
+
+                    BufferedImage emojiImage = ImageIO.read(emoji);
+                    g2d.drawImage(emojiImage, xIng, y - height, height, height, null);
+                    xIng += height + 2;
+                }catch (Exception e){
+                    e.printStackTrace();
+                    g2d.drawString("?", xIng, y);
+                    xIng += TextModel.getTextWidth("?", font);;
+                }
+            }else {
+
+                GlyphVector glyphVector = font.createGlyphVector(g2d.getFontRenderContext(), s);
+                Shape textShape = glyphVector.getOutline();
+                AffineTransform transform = new AffineTransform();
+                transform.translate(xIng, y);
+                textShape = transform.createTransformedShape(textShape);
+
+                g2d.draw(textShape);
+                g2d.setColor(color);
+                g2d.fill(textShape);
+                xIng += textWidth;
+            }
+        }
     }
 
     /**
