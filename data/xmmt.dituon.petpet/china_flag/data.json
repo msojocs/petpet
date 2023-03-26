@@ -1,0 +1,13 @@
+{
+  "type": "IMG",
+  "avatar": [
+    {
+      "type": "TO",
+      "pos": [0, 0, 640, 640],
+      "avatarOnTop": false,
+      "fit": "COVER"
+    }
+  ],
+  "text": [],
+  "alias": ["国旗"]
+}

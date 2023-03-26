@@ -1,0 +1,13 @@
+{
+  "type": "IMG",
+  "avatar": [
+    {
+      "type": "TO",
+      "pos": [66, 40, 320, 370],
+      "angle": -25,
+      "avatarOnTop": false
+    }
+  ],
+  "text": [],
+  "alias": ["继续干活", "打工人"]
+}

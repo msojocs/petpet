@@ -1,0 +1,22 @@
+{
+    "type": "IMG",
+    "avatar": [{
+        "type": "TO",
+        "pos": [25,35,350,400],
+        "posType": "ZOOM",
+        "style": [],
+        "round": false,
+        "avatarOnTop": true,
+        "fit": "CONTAIN"
+    }],
+    "text": [{
+        "text": "我永远喜欢$txt1[这个]",
+        "pos": [20,550],
+        "color": "#000000",
+        "font": "MiSans Bold",
+        "size": 70,
+        "align": "LEFT"
+    }],
+    "alias": ["一样"],
+    "inRandomList": false
+}

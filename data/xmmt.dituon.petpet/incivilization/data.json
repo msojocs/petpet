@@ -1,0 +1,22 @@
+{
+    "type": "IMG",
+    "avatar": [{
+        "type": "TO",
+        "pos": [167, 151,150,150],
+        "posType": "ZOOM",
+        "style": [],
+        "round": true,
+        "avatarOnTop": true,
+		"fit": "CONTAIN"
+    }],
+    "text": [{
+        "text": "$txt1[你刚才说的话不是很礼貌！]",
+        "pos": [57,92],
+        "color": "#000000",
+        "font": "MiSans Bold",
+        "size": 40,
+        "align": "LEFT"
+    }],
+    "alias": ["不文明"],
+    "inRandomList": false
+}
