@@ -33,7 +33,7 @@ public class BasePetService {
     protected HashMap<String, Callable<Map<Short, BufferedImage>>> backgroundLambdaMap = new HashMap<>();
     public String keyListString = "";
 
-//    protected int serviceThreadPoolSize = DEFAULT_THREAD_POOL_SIZE;
+    //    protected int serviceThreadPoolSize = DEFAULT_THREAD_POOL_SIZE;
 //    protected ExecutorService serviceThreadPool = Executors.newFixedThreadPool(serviceThreadPoolSize);
     protected int gifEncoderThreadPoolSize = DEFAULT_THREAD_POOL_SIZE;
     protected BaseGifMaker gifMaker = new BaseGifMaker(gifEncoderThreadPoolSize);
@@ -79,7 +79,7 @@ public class BasePetService {
      */
     public void putKeyData(String key, KeyData data) {
         data.getAvatar().forEach(avatar -> {
-            if  (avatar.getResampling() == null) avatar.setResampling(resampling);
+            if (avatar.getResampling() == null) avatar.setResampling(resampling);
         });
         dataMap.put(key.intern(), data);
 
@@ -94,7 +94,9 @@ public class BasePetService {
             short imageNum = 0;
             for (File file : files) {
                 if (!file.getName().endsWith(".png")) continue;
-                backgroundMap.put(imageNum, ImageIO.read(new File(path + imageNum++ + ".png")));
+                File f = new File(path + imageNum++ + ".png");
+                if (f.exists())
+                    backgroundMap.put(imageNum, ImageIO.read(f));
             }
             return backgroundMap;
         });
@@ -118,7 +120,7 @@ public class BasePetService {
      */
     public void putKeyData(String key, KeyData data, List<BufferedImage> backgroundList) {
         data.getAvatar().forEach(avatar -> {
-            if  (avatar.getResampling() == null) avatar.setResampling(resampling);
+            if (avatar.getResampling() == null) avatar.setResampling(resampling);
         });
         dataMap.put(key, data);
 
@@ -234,9 +236,14 @@ public class BasePetService {
             ArrayList<AvatarModel> avatarList = new ArrayList<>();
 
             if (!data.getAvatar().isEmpty()) {
-                data.getAvatar().forEach(avatarData ->
-                        avatarList.add(new AvatarModel(avatarData, gifAvatarExtraDataProvider, data.getType()))
-                );
+                data.getAvatar().forEach(avatarData -> {
+                    if (avatarData.getLocalName() != null) {
+                        String path = dataRoot.getAbsolutePath() + File.separator +
+                                (dataMap.containsKey(key) ? key : aliaMap.get(key)) + File.separator;
+                        avatarData.setLocalName(path + avatarData.getLocalName());
+                    }
+                    avatarList.add(new AvatarModel(avatarData, gifAvatarExtraDataProvider, data.getType()));
+                });
             }
 
             int delay = data.getDelay() != null ? data.getDelay() : 65;
@@ -381,10 +388,12 @@ public class BasePetService {
     public int getGifEncoderThreadPoolSize() {
         return gifEncoderThreadPoolSize;
     }
-    public BaseGifMaker getGifMaker(){
+
+    public BaseGifMaker getGifMaker() {
         return gifMaker;
     }
-    public BaseImageMaker getImageMaker(){
+
+    public BaseImageMaker getImageMaker() {
         return imageMaker;
     }
 }

@@ -120,11 +120,11 @@ data class TextExtraData(
 )
 
 enum class AvatarType {
-    FROM, TO, GROUP, BOT, RANDOM
+    FROM, TO, GROUP, BOT, RANDOM, LOCAL
 }
 
 enum class AvatarPosType {
-    ZOOM, DEFORM
+    ZOOM, DEFORM, MARGIN
 }
 
 enum class CropType {
@@ -144,6 +144,7 @@ data class AvatarData @JvmOverloads constructor(
     val type: AvatarType,
     var pos: JsonArray = Json.decodeFromString(JsonArray.serializer(), "[0,0,100,100]"),
     var posType: AvatarPosType? = AvatarPosType.ZOOM,
+    var position: List<Position>? = listOf(Position.LEFT, Position.TOP),
     var crop: JsonArray? = null,
     var cropType: CropType? = CropType.NONE,
     var fit: FitType? = FitType.FILL,
@@ -151,6 +152,7 @@ data class AvatarData @JvmOverloads constructor(
     var angle: Short? = 0,
     var opacity: Float? = 1.0F,
     var round: Boolean? = false,
+    var localName: String? = null,
     var rotate: Boolean? = false,
     var avatarOnTop: Boolean? = true,
     var antialias: Boolean? = false,

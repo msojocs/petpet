@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HelloPetpet {
@@ -66,8 +67,9 @@ public class HelloPetpet {
 
         //可通过工厂方法 使用URL快速创建AvatarExtraData (头像数据)
         GifAvatarExtraDataProvider avatarExtraData = BaseConfigFactory.getGifAvatarExtraDataFromUrls( //要合成的图片素材
-                "https://q1.qlogo.cn/g?b=qq&nk=2544193782&s=640", //指定FromAvatar为网络图片
-                "file:./example-data/input/to.gif", //指定ToAvatar为本地文件(支持GIF)
+                "https://q1.qlogo.cn/g?b=qq&nk=1690127128&s=640", //指定FromAvatar为网络图片
+                "https://q1.qlogo.cn/g?b=qq&nk=1690127128&s=640",
+//                "file:./example-data/input/to.gif", //指定ToAvatar为本地文件(支持GIF)
                 null, //不指定GroupAvatar(null)
                 null, //不指定BotAvatar
                 List.of("url1", "url2", "url3") //指定RandomAvatarList(可空)

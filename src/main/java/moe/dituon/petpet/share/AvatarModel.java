@@ -1,16 +1,16 @@
 package moe.dituon.petpet.share;
 
+import kotlin.NotImplementedError;
 import kotlinx.serialization.json.JsonArray;
 import kotlinx.serialization.json.JsonElement;
 import net.coobird.thumbnailator.Thumbnails;
 
+import javax.imageio.ImageIO;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,6 +21,7 @@ public class AvatarModel {
     private Type imageType;
     protected AvatarType type;
     protected int[][] pos = {{0, 0, 100, 100}};
+    protected List<Position> position;
     protected FitType fitType;
     protected short angle;
     protected float opacity = 1.0F;
@@ -45,7 +46,7 @@ public class AvatarModel {
     }
 
     public AvatarModel(AvatarData data, GifAvatarExtraDataProvider extraData, Type imageType) {
-        setImage(data.getType(), extraData);
+        setImage(data, data.getType(), extraData);
         buildData(data, imageType);
     }
 
@@ -53,6 +54,7 @@ public class AvatarModel {
         type = data.getType();
         posType = data.getPosType() != null ? data.getPosType() : AvatarPosType.ZOOM;
         setPos(data.getPos(), this.imageType = imageType);
+        position = data.getPosition();
         cropType = data.getCropType();
         setCrop(data.getCrop());
         fitType = data.getFit();
@@ -88,7 +90,7 @@ public class AvatarModel {
         }
     }
 
-    private void setImage(AvatarType type, GifAvatarExtraDataProvider extraData) {
+    private void setImage(AvatarData data, AvatarType type, GifAvatarExtraDataProvider extraData) {
         switch (type) {
             case FROM:
                 imageList = Objects.requireNonNull(extraData.getFromAvatar()).invoke();
@@ -102,6 +104,17 @@ public class AvatarModel {
             case BOT:
                 imageList = Objects.requireNonNull(extraData.getBotAvatar()).invoke();
                 break;
+            case LOCAL:
+//                throw new NotImplementedError("使用本地图片作为绘制材料");
+                if (data.getLocalName() != null)
+                    imageList = new LinkedList<>() {{
+                        try {
+                            add(ImageIO.read(new File(data.getLocalName())));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }};
+                break;
             case RANDOM:
                 imageList = Objects.requireNonNull(extraData.getRandomAvatar()).invoke();
                 break;
@@ -111,6 +124,7 @@ public class AvatarModel {
     private void setPos(JsonArray posElements, Type imageType) {
         int i = 0;
         switch (posType) {
+            case MARGIN:
             case ZOOM:
                 switch (imageType) {
                     case GIF:
@@ -140,6 +154,7 @@ public class AvatarModel {
                         deformData = DeformData.fromImgPos(posElements);
                         break;
                 }
+                break;
         }
     }
 
@@ -220,11 +235,11 @@ public class AvatarModel {
             CountDownLatch latch = new CountDownLatch(imageList.size());
             for (short i = 0; i < imageList.size(); i++) {
                 short fi = i;
-                threadPool.execute(()->{
+                threadPool.execute(() -> {
                     try {
                         var img = Thumbnails.of(imageList.get(fi)).size(faw, fah).keepAspectRatio(false).asBufferedImage();
                         imageList.set(fi, img);
-                    }catch (IOException ex){
+                    } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     } finally {
                         latch.countDown();
@@ -241,6 +256,9 @@ public class AvatarModel {
 
     public FitType getZoomType() {
         return fitType;
+    }
+    public List<Position> getPosition() {
+        return position;
     }
 
     public float getOpacity() {
