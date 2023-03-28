@@ -94,9 +94,10 @@ public class BasePetService {
             short imageNum = 0;
             for (File file : files) {
                 if (!file.getName().endsWith(".png")) continue;
-                File f = new File(path + imageNum++ + ".png");
+                File f = new File(path + imageNum + ".png");
                 if (f.exists())
                     backgroundMap.put(imageNum, ImageIO.read(f));
+                imageNum++;
             }
             return backgroundMap;
         });
@@ -275,6 +276,7 @@ public class BasePetService {
                 return new Pair<>(inputStream, "png");
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new RuntimeException("解析 " + key + "/data.json 出错", ex);
         }
         throw new RuntimeException();
