@@ -240,7 +240,8 @@ public class BasePetService {
                     if (avatarData.getLocalName() != null) {
                         String path = dataRoot.getAbsolutePath() + File.separator +
                                 (dataMap.containsKey(key) ? key : aliaMap.get(key)) + File.separator;
-                        avatarData.setLocalName(path + avatarData.getLocalName());
+                        if (!avatarData.getLocalName().startsWith(path))
+                            avatarData.setLocalName(path + avatarData.getLocalName());
                     }
                     avatarList.add(new AvatarModel(avatarData, gifAvatarExtraDataProvider, data.getType()));
                 });
