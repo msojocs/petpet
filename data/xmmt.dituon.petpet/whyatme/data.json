@@ -1,0 +1,12 @@
+{
+    "type": "IMG",
+    "avatar": [{
+        "type": "TO",
+        "pos": [42,13,267,267],
+        "round": true,
+        "avatarOnTop": false
+    }],
+    "text": [],
+    "alias": ["为什么@我"],
+    "inRandomList": false
+}

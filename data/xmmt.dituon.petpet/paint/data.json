@@ -1,0 +1,13 @@
+{
+    "type": "IMG",
+    "avatar": [{
+        "type": "TO",
+        "pos": [96,107,125,142],
+        "round": false,
+        "avatarOnTop": false,
+        "angle": -5
+    }],
+    "text": [],
+    "inRandomList": false,
+    "alias": [ "这像画吗"]
+}
