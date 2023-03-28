@@ -1,0 +1,69 @@
+{
+    "type": "IMG",
+    "avatar": [{
+        "type": "TO",
+        "pos": [10,20,80,80],
+        "round": true,
+        "avatarOnTop": true
+    },{
+        "type": "LOCAL",
+        "localName": "corner1.png",
+        "pos": [100,70,50,50],
+        "round": false,
+        "avatarOnTop": true
+    },{
+        "type": "LOCAL",
+        "localName": "corner2.png",
+        "pos": [100,120,50,50],
+        "round": false,
+        "avatarOnTop": true
+    },{
+        "type": "LOCAL",
+        "localName": "corner3.png",
+        "position": ["RIGHT", "TOP"],
+        "pos": [100,70,50,50],
+        "round": false,
+        "avatarOnTop": true
+    },{
+        "type": "LOCAL",
+        "localName": "corner4.png",
+        "position": ["RIGHT", "TOP"],
+        "pos": [100,120,50,50],
+        "round": false,
+        "avatarOnTop": true
+    },{
+        "type": "LOCAL",
+        "localName": "label.png",
+        "pos": [120,20,90,30],
+        "round": false,
+        "avatarOnTop": true
+    },{
+        "type": "LOCAL",
+        "localName": "white.png",
+        "pos": [150,83,100,53],
+        "posType": "MARGIN",
+        "round": false,
+        "avatarOnTop": true
+    }],
+    "background": {
+        "size": ["240 + text1Width","210"],
+        "color": "#eaedf4"
+    },
+    "text": [{
+        "text": "$to",
+        "color": "#868894",
+        "pos": [218, 43],
+        "position": ["LEFT", "TOP"],
+        "font": "MiSans Bold",
+        "size": 23
+    },{
+        "text": "$txt1[来份瑟图]",
+        "color": "#000000",
+        "pos": [150, 132],
+        "align": "LEFT",
+        "font": "MiSans Bold",
+        "size": 35
+    }
+    ],
+    "alias": ["我朋友说"]
+}
