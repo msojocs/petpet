@@ -1,0 +1,16 @@
+{
+    "type": "IMG",
+    "avatar": [{
+        "type": "TO",
+        "pos": [0,0,500,500],
+        "posType": "ZOOM",
+        "style": [],
+        "round": false,
+        "avatarOnTop": false,
+		"opacity": 0.5,
+		"fit": "CONTAIN"
+    }],
+    "text": [],
+    "alias": ["手枪"],
+    "inRandomList": false
+}

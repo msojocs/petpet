@@ -1,0 +1,15 @@
+{
+    "type": "IMG",
+    "avatar": [{
+        "type": "TO",
+        "pos": [113,205,159,171],
+        "posType": "ZOOM",
+        "style": [],
+        "round": false,
+        "avatarOnTop": false,
+		"fit": "CONTAIN"
+    }],
+    "text": [],
+    "alias": ["抱紧"],
+    "inRandomList": false
+}

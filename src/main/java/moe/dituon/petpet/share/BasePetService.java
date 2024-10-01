@@ -227,7 +227,7 @@ public class BasePetService {
             TemplateDTO data = dataMap.containsKey(key) ? dataMap.get(key) : dataMap.get(aliaMap.get(key)[0]);
             BufferedImage[] backgrounds = backgroundLambdaMap.get(key).call();
             return generateImage(
-                    data, backgrounds, gifAvatarExtraDataProvider, textExtraData, additionTextDataList
+                    key, data, backgrounds, gifAvatarExtraDataProvider, textExtraData, additionTextDataList
             );
         } catch (FileNotFoundException ex) {
             throw new RuntimeException("无法读取 " + key + " 背景文件", ex);
@@ -237,6 +237,7 @@ public class BasePetService {
     }
 
     public Pair<InputStream, String> generateImage(
+            @NotNull String key,
             TemplateDTO data,
             BufferedImage[] backgrounds,
             GifAvatarExtraDataProvider gifAvatarExtraDataProvider,
@@ -260,9 +261,15 @@ public class BasePetService {
         ArrayList<AvatarModel> avatarList = new ArrayList<>(data.getAvatar().size());
 
         if (!data.getAvatar().isEmpty()) {
-            data.getAvatar().forEach(avatarData ->
-                    avatarList.add(new AvatarModel(avatarData, gifAvatarExtraDataProvider, data.getType()))
-            );
+            data.getAvatar().forEach(avatarData -> {
+                if (avatarData.getLocalName() != null) {
+                    String path = dataRoot.getAbsolutePath() + File.separator +
+                            (dataMap.containsKey(key) ? key : aliaMap.get(key)) + File.separator;
+                    if (!avatarData.getLocalName().startsWith(path))
+                        avatarData.setLocalName(path + avatarData.getLocalName());
+                }
+                avatarList.add(new AvatarModel(avatarData, gifAvatarExtraDataProvider, data.getType()));
+            });
         }
 
         int delay = data.getDelay() != null ? data.getDelay() : 65;

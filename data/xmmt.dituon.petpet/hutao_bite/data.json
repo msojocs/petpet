@@ -1,0 +1,14 @@
+{
+    "type": "GIF",
+    "avatar": [{
+        "type": "TO",
+        "pos": [
+            [106, 236, 100, 100],
+            [105, 235, 100, 100]
+        ],
+        "round": true,
+        "avatarOnTop": false
+    }],
+    "text": [],
+    "alias": ["胡桃啃"]
+}

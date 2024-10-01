@@ -1,5 +1,6 @@
 package moe.dituon.petpet.share;
 
+import com.yy.mobile.emoji.EmojiReader;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -11,6 +12,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -165,12 +167,48 @@ public abstract class ImageSynthesisCore {
             String[] texts = text.split("\n");
             short height = (short) TextModel.getTextHeight(text, font);
             for (String txt : texts) {
-                g2d.drawString(txt, x, y);
+                drawString(g2d, txt, x, y, font);
                 y += height + TextModel.LINE_SPACING;
             }
             return;
         }
-        g2d.drawString(text, x, y);
+        drawString(g2d, text, x, y, font);
+    }
+
+    protected static void drawString(Graphics2D g2d, String str, int x, int y, Font font){
+        List<EmojiReader.Node> nodes = EmojiReader.INSTANCE.analyzeText(str);
+        int xIng = x;
+        for (EmojiReader.Node node : nodes) {
+            char[] chars = Character.toChars(node.getCodePoint().get(0));
+            String s = String.valueOf(chars);
+            int textWidth = TextModel.getTextWidth(s, font);
+            if (node.isEmoji()){
+                // emoji
+                List<Integer> codePoint = node.getCodePoint();
+                StringBuilder sb = new StringBuilder();
+                for (Integer cp : codePoint) {
+                    sb.append(String.format("-%x", cp));
+                }
+                String emojiCode = sb.substring(1);
+                try{
+                    short height = (short) TextModel.getTextHeight(s, font);
+                    File emoji = new File("./data/emoji/png/" + emojiCode + ".png");
+                    // emoji不存在
+                    if (!emoji.exists())continue;
+
+                    BufferedImage emojiImage = ImageIO.read(emoji);
+                    g2d.drawImage(emojiImage, xIng, y - height, height, height, null);
+                    xIng += height + 2;
+                }catch (Exception e){
+                    e.printStackTrace();
+                    g2d.drawString("?", xIng, y);
+                    xIng += TextModel.getTextWidth("?", font);;
+                }
+            }else{
+                g2d.drawString(s, xIng, y);
+                xIng += textWidth;
+            }
+        }
     }
 
     /**
@@ -197,41 +235,72 @@ public abstract class ImageSynthesisCore {
         g2d.setStroke(outlineStroke);
 
         if (!text.contains("\n")) {
-            g2d.setColor(strokeColor);
-
-            GlyphVector glyphVector = font.createGlyphVector(g2d.getFontRenderContext(), text);
-            Shape textShape = glyphVector.getOutline();
-            AffineTransform transform = new AffineTransform();
-            transform.translate(pos[0], pos[1]);
-            textShape = transform.createTransformedShape(textShape);
-
-            g2d.draw(textShape);
-            g2d.setColor(color);
-            g2d.fill(textShape);
+            int y = pos[1];
+            g2dDrawStrokeTextLine(g2d, text, pos, color, font, strokeColor, y);
         } else {
             String[] texts = text.split("\n");
             int y = pos[1];
 
             short height = (short) TextModel.getTextHeight(text, font);
             for (String txt : texts) {
-                g2d.setColor(strokeColor);
-
-                GlyphVector glyphVector = font.createGlyphVector(g2d.getFontRenderContext(), txt);
-                Shape textShape = glyphVector.getOutline();
-                AffineTransform transform = new AffineTransform();
-                transform.translate(pos[0], y);
+                g2dDrawStrokeTextLine(g2d, txt, pos, color, font, strokeColor, y);
                 y += height + strokeSize * 2 + 2;
-                textShape = transform.createTransformedShape(textShape);
-
-                g2d.draw(textShape);
-                g2d.setColor(color);
-                g2d.fill(textShape);
             }
         }
 
         g2d.setColor(originalColor);
         g2d.setStroke(originalStroke);
         g2d.setRenderingHints(originalHints);
+    }
+
+    private static void g2dDrawStrokeTextLine(Graphics2D g2d, String text, int[] pos, Color color, Font font, Color strokeColor, int y) {
+
+
+        List<EmojiReader.Node> nodes = EmojiReader.INSTANCE.analyzeText(text);
+        int xIng = pos[0];
+        for (EmojiReader.Node node : nodes) {
+            g2d.setColor(strokeColor);
+            char[] chars = Character.toChars(node.getCodePoint().get(0));
+            String s = String.valueOf(chars);
+            int textWidth = TextModel.getTextWidth(s, font);
+            if (node.isEmoji()) {
+
+                // emoji
+                List<Integer> codePoint = node.getCodePoint();
+                StringBuilder sb = new StringBuilder();
+                for (Integer cp : codePoint) {
+                    sb.append(String.format("-%x", cp));
+                }
+                String emojiCode = sb.substring(1);
+
+                try{
+                    short height = (short) TextModel.getTextHeight(s, font);
+                    File emoji = new File("./data/emoji/png/" + emojiCode + ".png");
+                    // emoji不存在
+                    if (!emoji.exists())continue;
+
+                    BufferedImage emojiImage = ImageIO.read(emoji);
+                    g2d.drawImage(emojiImage, xIng, y - height, height, height, null);
+                    xIng += height + 2;
+                }catch (Exception e){
+                    e.printStackTrace();
+                    g2d.drawString("?", xIng, y);
+                    xIng += TextModel.getTextWidth("?", font);;
+                }
+            }else {
+
+                GlyphVector glyphVector = font.createGlyphVector(g2d.getFontRenderContext(), s);
+                Shape textShape = glyphVector.getOutline();
+                AffineTransform transform = new AffineTransform();
+                transform.translate(xIng, y);
+                textShape = transform.createTransformedShape(textShape);
+
+                g2d.draw(textShape);
+                g2d.setColor(color);
+                g2d.fill(textShape);
+                xIng += textWidth;
+            }
+        }
     }
 
     /**

@@ -15,20 +15,53 @@ import java.util.function.Function;
 public class ImageSynthesis extends ImageSynthesisCore {
     protected static ExecutorService threadPool = Executors.newFixedThreadPool(BasePetService.DEFAULT_THREAD_POOL_SIZE);
 
-    protected static void g2dDrawAvatar(Graphics2D g2d, AvatarModel avatar, short index) {
-        g2dDrawAvatar(g2d, avatar, index, 1.0F);
+    protected static void g2dDrawAvatar(Graphics2D g2d, AvatarModel avatar, short index, int[] stickerSize) {
+        g2dDrawAvatar(g2d, avatar, index, 1.0F, stickerSize);
     }
 
     protected static void g2dDrawAvatar(Graphics2D g2d, AvatarModel avatar,
-                                        short index, float multiple) {
+                                        short index, float multiple, int[] stickerSize) {
+
         switch (avatar.getPosType()) {
             case ZOOM:
-                g2dDrawZoomAvatar(
-                        g2d, avatar.getFrame(index), avatar.getPos(index),
-                        avatar.getAngle(index),
-                        avatar.getTransformOrigin() == TransformOrigin.CENTER,
-                        multiple, avatar.getZoomType(), avatar.getOpacity()
-                );
+                {
+                    int[] pos = avatar.getPos(index);
+                    switch (avatar.getPosition().get(0)) {
+                        case RIGHT:
+                            pos[0] = stickerSize[0] - pos[0];
+                            break;
+                        case CENTER:
+                            pos[0] = stickerSize[0] / 2 + pos[0];
+                            break;
+                    }
+                    switch (avatar.getPosition().get(1)) {
+                        case BOTTOM:
+                            pos[1] = stickerSize[1] - pos[1];
+                            break;
+                        case CENTER:
+                            pos[1] = stickerSize[1] / 2 + pos[1];
+                            break;
+                    }
+                    g2dDrawZoomAvatar(
+                            g2d, avatar.getFrame(index), pos,
+                            avatar.getAngle(index), avatar.getTransformOrigin() == TransformOrigin.CENTER, multiple,
+                            avatar.getZoomType(), avatar.getOpacity()
+                    );
+                }
+                break;
+            case MARGIN:
+                {
+                    // [左,上,右,下]
+                    int[] pos = avatar.getPos(index);
+                    // 宽度
+                    pos[2] = stickerSize[0] - pos[2] - pos[0];
+                    pos[3] = stickerSize[1] - pos[3] - pos[1];
+                    g2dDrawZoomAvatar(
+                            g2d, avatar.getFrame(index), pos,
+                            avatar.getAngle(index), avatar.getTransformOrigin() == TransformOrigin.CENTER, multiple,
+                            avatar.getZoomType(), avatar.getOpacity()
+                    );
+                }
                 break;
             case DEFORM:
                 AvatarModel.DeformData deformData = avatar.getDeformData();
@@ -119,13 +152,14 @@ public class ImageSynthesis extends ImageSynthesisCore {
                 bottomAvatars.add(avatar);
             }
         }
+        int[] stickerSize = new int[]{stickerWidth, stickerHeight};
         // 画
         for (AvatarModel avatar : bottomAvatars) {
-            g2dDrawAvatar(g2d, avatar, index, multiple);
+            g2dDrawAvatar(g2d, avatar, index, multiple, stickerSize);
         }
         g2d.drawImage(sticker, 0, 0, stickerWidth, stickerHeight, null);
         for (AvatarModel avatar : topAvatars) {
-            g2dDrawAvatar(g2d, avatar, index, multiple);
+            g2dDrawAvatar(g2d, avatar, index, multiple, stickerSize);
         }
 
         g2dDrawTexts(g2d, textList, stickerWidth, stickerHeight);

@@ -1,0 +1,12 @@
+{
+  "type": "IMG",
+  "avatar": [
+    {
+      "type": "TO",
+      "pos": [0, 0, 500, 500],
+      "avatarOnTop": false
+    }
+  ],
+  "text": [],
+  "alias": ["奶茶"]
+}
