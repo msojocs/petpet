@@ -95,7 +95,13 @@ public class BasePetService {
                     int startIndex = fileName.lastIndexOf("/") + 1;
                     int endIndex = fileName.lastIndexOf(".");
                     String number = fileName.substring(startIndex, endIndex);
-                    return Integer.parseInt(number);
+                    try {
+                        return Integer.parseInt(number);
+                    }
+                    catch (Exception ex)
+                    {
+                        return 0;
+                    }
                 }))
                 .toArray(File[]::new);
 
