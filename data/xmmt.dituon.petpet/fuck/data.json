@@ -1,0 +1,24 @@
+{
+  "type": "GIF",
+  "avatar": [
+    {
+      "type": "FROM",
+      "pos": [
+        [115, -3, 125, 120], [110, -1, 125, 127], [127, 0, 125, 120]
+      ],
+      "round": true,
+      "avatarOnTop": true
+    },
+    {
+      "type": "TO",
+      "pos": [
+        [8, 290, 117, 115], [10, 285, 115, 110], [5, 280, 120, 130]
+      ],
+      "angle": -90,
+      "round": true,
+      "avatarOnTop": true
+    }
+  ],
+  "text": [],
+  "alias": ["艾草"]
+}
